@@ -1,0 +1,68 @@
+<head>
+  <title>queue</title>
+   <script src="//connect.soundcloud.com/sdk.js"></script>
+   <script src="../js/soundCloudWidget.js"></script>
+</head>
+
+<body>
+
+{{>player}}
+{{>search}}
+
+{{>soundQueue}}
+
+</body>
+
+
+<template name="player">
+<h1>Music Player </h1>
+
+<div id="player"> </div>
+</template>
+
+
+<template name="search">
+  <h1>Search Music </h1>
+  <input type = "text" id = "textToSearch" >
+  <button class = "searchBtn">search</button>
+
+
+  {{>searchResults}}
+  
+</template>
+<template name ="searchResults">
+  <div class="searchResults"> </div>
+        {{#each searchResults}}
+        
+          {{> track_search}}
+     
+      {{/each}}
+</template>
+
+
+<template name="soundQueue">
+  <h1>Queue</h1>
+  <button id="playQueue">Play Queue</button>
+        {{#each queueValues}}
+        
+          {{> track_queue}}
+     
+      {{/each}}
+</template>
+
+<template name="track_search">
+  <li>
+    <div class="track" >{{title}}</div> 
+    <button class="addToQueButton">Add to Queue</button>
+  </li>
+</template>
+
+<template name="track_queue">
+  <li>
+    <div class="track" >{{title}}</div> 
+    <button class="removeFromQueButton">Remove From queue</button>
+  </li>
+</template>
+
+
+
