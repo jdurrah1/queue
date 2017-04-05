@@ -62,16 +62,20 @@
 </template>
 
 <template name="track_search">
-  <li>
-    <div class="track" >{{title}}</div> 
-    <button class="addToQueButton">Add to Queue</button>
+  <li class="w3-padding-16">
+    <span class="track w3-button w3-white w3-xlarge w3-right addToQueButton">+</span>
+    <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px">
+    <span class="w3-medium">{{title}}</span><br>
+    <span>{{user.username}}</span>
   </li>
 </template>
 
 <template name="track_queue">
-  <li>
-    <div class="track" >{{title}}</div> 
-    <button class="removeFromQueButton">Remove From queue</button>
+  <li class="w3-padding-16">
+    <span class="track w3-button w3-white w3-xlarge w3-right removeFromQueButton">×</span>
+    <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right" style="width:50px">
+    <span class="w3-medium">{{title}}</span><br>
+    <span>{{artist}}</span>
   </li>
 </template>
 

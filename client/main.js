@@ -108,6 +108,19 @@ Template.search.events({
 		});
 
 	},
+	'keyup #textToSearch': function(){
+	console.log("search keyup");
+	//$(".searchResults").html( $("#textToSearch").val()); 
+
+	query = $("#textToSearch").val();
+	SC.get('/tracks', {
+	  q:query 
+	}, function(tracks) {
+	  console.log(tracks);
+	  Session.set("searchedResults", tracks); 
+	});
+
+	},
 });
 
 
@@ -125,6 +138,8 @@ Template.track_search.events({
 
 		Queue.insert({
 			this,
+			artist: this.user.username,
+			imageSrc:this.artwork_url,
 			title: this.title,
 			createdAt: new Date(), 
 		});
