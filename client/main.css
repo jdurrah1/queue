@@ -1,1 +1,14 @@
 /* CSS declarations go here */
+li {
+    padding: 0;
+    list-style-type: none;
+}
+
+.control {
+
+	display:inline-block
+}
+
+.controls {
+	bottom: 70px;
+}
