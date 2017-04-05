@@ -1,0 +1,7 @@
+{
+  "galaxy.meteor.com": {
+     "env": {
+       "MONGO_URL": "mongodb://jacob:password@ds151820.mlab.com:51820/eecs498-queue"
+     }
+   }
+}
