@@ -66,6 +66,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 .w3-third img{margin-bottom: -6px; opacity: 0.8; cursor: pointer}
@@ -73,15 +74,21 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
 <div class="w3-light-grey w3-content" style="max-width:1600px">
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-bar-block w3-white w3-animate-left w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold" id="mySidebar"><br>
+<!-- Queue/menu -->
+<nav class="w3-sidebar w3-bar-block w3-white w3-animate-right w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold;right:0" id="mySidebar"><br>
   {{>soundQueue}}
 </nav>
+<!--Search/menue -->
+<nav class="w3-sidebar w3-bar-block w3-white w3-animate-left w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold" id="mySidebar2"><br>
+  {{>search}}
+</nav>
+
 
 <!-- Top menu on small screens -->
 <header class="w3-container w3-top w3-hide-large w3-white w3-xlarge w3-padding-16">
-  <span class="w3-left w3-padding">SOME NAME</span>
-  <a href="javascript:void(0)" class="w3-right w3-button w3-white" onclick="w3_open()">☰</a>
+  <span class="w3-left w3-padding"></span>
+  <a href="javascript:void(0)" class="w3-right w3-button w3-white" onclick="w3_open()">Q</a>
+  <a href="javascript:void(0)" class="w3-left w3-button w3-white fa fa-search" onclick="w3_open2()"></a>
 </header>
 
 <!-- Overlay effect when opening sidebar on small screens -->
@@ -98,7 +105,6 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     {{>player}}
   </div>
 
-  {{>search}}
 
 
 <!-- End page content -->
@@ -114,15 +120,21 @@ function w3_open() {
 function w3_close() {
     document.getElementById("mySidebar").style.display = "none";
     document.getElementById("myOverlay").style.display = "none";
+    document.getElementById("mySidebar2").style.display = "none";
 }
 
-// Modal Image Gallery
-function onClick(element) {
-  document.getElementById("img01").src = element.src;
-  document.getElementById("modal01").style.display = "block";
-  var captionText = document.getElementById("caption");
-  captionText.innerHTML = element.alt;
+function w3_open2() {
+    document.getElementById("mySidebar2").style.display = "block";
+    document.getElementById("myOverlay").style.display = "block";
 }
+ 
+function w3_close2() {
+    document.getElementById("mySidebar2").style.display = "none";
+    document.getElementById("myOverlay").style.display = "none";
+}
+
+
+
 
 </script>
 
