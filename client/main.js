@@ -42,15 +42,7 @@ Template.player.events({
 			initilizeWidget();
 		}
 		widget.toggle(); 
-
-		if($( ".pauseIcon" ).hasClass( "fa-play" )){
-			$( ".pauseIcon" ).removeClass("fa-play");
-			$( ".pauseIcon" ).addClass("fa-pause");
-		}
-		else{
-			$( ".pauseIcon" ).addClass("fa-play");
-			$( ".pauseIcon" ).removeClass("fa-pause");
-		}
+		togglePlayButton();
 
 	},
 	'click .nextIcon': function(){
@@ -59,20 +51,31 @@ Template.player.events({
 
 });
 
+function togglePlayButton(){
+
+
+		widget.isPaused(function(paused){
+			console.log("ispaused callback " + paused);
+			if(paused){
+				if($( ".pauseIcon" ).hasClass( "fa-pause" )){
+					$( ".pauseIcon" ).removeClass("fa-pause");
+					$( ".pauseIcon" ).addClass("fa-play");
+				}	
+			}
+			else {
+				if($( ".pauseIcon" ).hasClass( "fa-play" )){
+					$( ".pauseIcon" ).addClass("fa-pause");
+					$( ".pauseIcon" ).removeClass("fa-play");
+				}
+			}
+		});
+}
+
 function initilizeWidget()
 {
 	console.log('initilizizing Widget')
 	 widgetIframe = document.getElementById('sc-widget'),
      widget       = SC.Widget(widgetIframe);
-
-    widget.bind(SC.Widget.Events.READY, function() {
-      widget.bind(SC.Widget.Events.PLAY, function() {
-        // get information about currently playing sound
-        widget.getCurrentSound(function(currentSound) {
-          console.log('sound ' + currentSound.get('') + 'began to play');
-        });
-      });
-    });
 }
 
 function updateTrackUI(track)
@@ -194,11 +197,13 @@ function playNextSongFromQueue()
 
 			widget.bind(SC.Widget.Events.READY, function() {
 		 		widget.play();
+		 		togglePlayButton();
 			 });
 			widget.bind(SC.Widget.Events.FINISH, function() {
         		playNextSongFromQueue();
         		widget.bind(SC.Widget.Events.READY, function() {
 		 			widget.play();
+		 			togglePlayButton();
 		 		});
       		});
 		}
