@@ -11,6 +11,8 @@ Session.set("searchedResults", []);
 
 Session.set("queue", []);
 
+widget = undefined; 
+
 
 
 SC.initialize({
@@ -19,14 +21,66 @@ SC.initialize({
 });
 
 Template.player.onCreated(function playerOnCreated() {
+
+
 	console.log("player OnCreate");
 	SC.get("https://api.soundcloud.com/tracks/301162745", function(track) {
 		console.log("player_SC_get_callback");
-	 SC.oEmbed(track.permalink_url, document.getElementById('player'));
-	 console.log(track);
+		updateTrackUI(track);
+	 //SC.oEmbed(track.permalink_url, document.getElementById('player'));
+	 	console.log(track);	
 	});
+
+
 });
 
+Template.player.events({
+	'click .pauseIcon': function(){
+		console.log('play/pause button clicked')
+
+		if(widget ===undefined){
+			initilizeWidget();
+		}
+		widget.toggle(); 
+
+		if($( ".pauseIcon" ).hasClass( "fa-play" )){
+			$( ".pauseIcon" ).removeClass("fa-play");
+			$( ".pauseIcon" ).addClass("fa-pause");
+		}
+		else{
+			$( ".pauseIcon" ).addClass("fa-play");
+			$( ".pauseIcon" ).removeClass("fa-pause");
+		}
+
+	},
+	'click .nextIcon': function(){
+		playNextSongFromQueue();
+	}
+
+});
+
+function initilizeWidget()
+{
+	console.log('initilizizing Widget')
+	 widgetIframe = document.getElementById('sc-widget'),
+     widget       = SC.Widget(widgetIframe);
+
+    widget.bind(SC.Widget.Events.READY, function() {
+      widget.bind(SC.Widget.Events.PLAY, function() {
+        // get information about currently playing sound
+        widget.getCurrentSound(function(currentSound) {
+          console.log('sound ' + currentSound.get('') + 'began to play');
+        });
+      });
+    });
+}
+
+function updateTrackUI(track)
+{
+	$("#trackArt").attr("src",track.artwork_url);
+	$("#artistName").text(track.user.username);
+	$("#trackName").text(track.title);
+}
 
 Template.search.onCreated(function searchOnCreated() {
 	console.log("search on create");
@@ -96,22 +150,16 @@ Template.soundQueue.helpers({
 Template.soundQueue.events({
 	'click #playQueue': function(){
 		console.log("play queue");
-		var iframeElement   = document.querySelector('iframe');
-		var iframeElementID = iframeElement.id;
-		widget         = SC.Widget(iframeElement);
+		if(widget===undefined){
+			var iframeElement   = document.querySelector('iframe');
+			var iframeElementID = iframeElement.id;
+			widget         = SC.Widget(iframeElement);
+		}
 		console.log(widget);
 
 
 		playNextSongFromQueue();
-		 widget.bind(SC.Widget.Events.READY, function() {
-		 	widget.play();
-		 });
-		widget.bind(SC.Widget.Events.FINISH, function() {
-        	playNextSongFromQueue();
-        	widget.bind(SC.Widget.Events.READY, function() {
-		 		widget.play();
-		 });
-      	});
+
 		
 	}
 
@@ -125,8 +173,19 @@ function playNextSongFromQueue()
 			var nextSong = temp[0]; 
 			console.log(nextSong);
 			console.log(nextSong.this.uri);
+			updateTrackUI(nextSong.this);
 			widget.load(nextSong.this.uri);
 			Queue.remove(nextSong._id);
+
+			widget.bind(SC.Widget.Events.READY, function() {
+		 		widget.play();
+			 });
+			widget.bind(SC.Widget.Events.FINISH, function() {
+        		playNextSongFromQueue();
+        		widget.bind(SC.Widget.Events.READY, function() {
+		 			widget.play();
+		 		});
+      		});
 		}
 		/*
 		var temp = Session.get("queue");
