@@ -2,7 +2,12 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session'
 import { Mongo } from 'meteor/mongo';
+import { Accounts } from 'meteor/accounts-base';
 import './main.html';
+
+Accounts.ui.config({
+  passwordSignupFields: 'USERNAME_ONLY',
+});
 
 Queue = new Mongo.Collection('queue');
 Session.set("searchedResults", []);
@@ -75,6 +80,25 @@ function updateTrackUI(track) {
 	$("#trackArt").attr("src",artworkURL);
 	$("#artistName").text(track.user.username);
 	$("#trackName").text(track.title);
+	$(".pauseIcon").show();
+	$(".nextIcon").show(); 
+}
+
+function updateTrackUIDefault() {
+	var artworkURL = "http://www.tunefind.com/i/album-art-empty.png";
+
+	$("#trackArt").attr("src",artworkURL);
+	$("#artistName").text("empty queue");
+	$("#trackName").text("Add Songs to the");
+
+	$(".pauseIcon").hide();
+	$(".nextIcon").hide(); 
+	widget.pause(); 
+	if($( ".pauseIcon" ).hasClass( "fa-pause" )){
+				$( ".pauseIcon" ).removeClass("fa-pause");
+				$( ".pauseIcon" ).addClass("fa-play");
+	}	
+	widget = undefined;
 }
 
 Template.search.onCreated(function searchOnCreated() {
@@ -127,6 +151,8 @@ Template.track_search.events({
 	'click .addToQueButton': function(){
 		console.log("click track");
 		console.log(this);
+		$(".pauseIcon").show();
+		$(".nextIcon").show(); 
 
 		Queue.insert({
 			this,
@@ -134,6 +160,7 @@ Template.track_search.events({
 			imageSrc:this.artwork_url,
 			title: this.title,
 			createdAt: new Date(), 
+			house: Meteor.user().username,
 		});
 		/*
 		var temp = Session.get("queue");
@@ -145,7 +172,7 @@ Template.track_search.events({
 
 Template.soundQueue.helpers({
 	queueValues(){
-		toReturn = Queue.find({}, { sort: { createdAt: -1 } }).fetch(); 
+		toReturn = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch(); 
 		console.log(toReturn);
 		return  toReturn;  //Session.get("queue"); 
 	}
@@ -166,8 +193,7 @@ Template.soundQueue.events({
 });
 
 function playNextSongFromQueue() {
-		temp = Queue.find({}, { sort: { createdAt: -1 } }).fetch(); 
-
+		temp = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch();
 		if(temp.length >0){
 			var nextSong = temp[0]; 
 			console.log(nextSong);
@@ -188,6 +214,10 @@ function playNextSongFromQueue() {
 		 		});
       		});
 		}
+		else{
+			updateTrackUIDefault();
+		}
+
 		/*
 		var temp = Session.get("queue");
 		if(temp.length >0){
@@ -200,6 +230,8 @@ function playNextSongFromQueue() {
 		}
 		*/
 }
+
+
 
 Template.track_queue.events({
 	'click .removeFromQueButton': function(){
