@@ -65,20 +65,15 @@
   <h1>Search Music </h1>
   <input type = "text" id = "textToSearch"  >
   <button class = "searchBtn">search</button>
-
-
   {{>searchResults}}
-  
 </template>
+
 <template name ="searchResults">
   <div class="searchResults"> </div>
-        {{#each searchResults}}
-        
-          {{> track_search}}
-     
-      {{/each}}
+    {{#each searchResults}}
+      {{> track_search}}
+    {{/each}}
 </template>
-
 
 <template name="soundQueue">
   <button id='exit'>Exit Room</button>
@@ -91,17 +86,17 @@
 
 <template name="track_search">
   <li class="w3-padding-16">
-    <span class="track w3-button w3-white w3-xlarge w3-right addToQueButton">+</span>
-    <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px">
+    <span class="track w3-button w3-white w3-large w3-right addToQueButton">+</span>
+    <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px; margin-left:10px">
     <span class="w3-medium">{{title}}</span><br>
-    <span>{{username}}</span>
+    <span>{{artist}}</span>
   </li>
 </template>
 
 <template name="track_queue">
   <li class="w3-padding-16">
     <span class="track w3-button w3-white w3-xlarge w3-right removeFromQueButton">×</span>
-    <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right" style="width:50px">
+    <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right " style="width:50px; margin-left:10px">
     <span class="w3-medium">{{title}}</span><br>
     <span>{{artist}}</span>
   </li>
@@ -131,7 +126,7 @@
   <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
   <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left:300px">
+    <div class="w3-main">
 
       <!-- Push down content on small screens --> 
       <div class="w3-hide-large" style="margin-top:83px"></div>

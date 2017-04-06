@@ -12,6 +12,7 @@ Session.set("searchedResults", []);
 Session.set("queue", []);
 Session.set("room", "");
 Session.set("error", "")
+Session.set("nowPlaying")
 
 // GLOBAL VARIABLES -----------------------------------------------------------
 widget = undefined;
@@ -32,17 +33,14 @@ Template.body.helpers({
 	},
 });
 
+// Login ----------------------------------------------------------------------
+
 // On the 'login' template being rendered
-Template.login.rendered = function () {
-	// On start, focus into the textbox
-	refocus();
-};
+Template.login.rendered = function () { refocus();};
 
 // Accessor functions available from the 'login' template in HTML 
 Template.login.helpers({
-	errorMessage() {
-		return Session.get("error");
-	}
+	errorMessage() { return Session.get("error"); }
 });
 
 // Event handlers for elements in the 'login' template
@@ -61,14 +59,11 @@ Template.login.events({
 		// Creates new room in Room
 		else {
 			console.log("Creating", $('#roomName').val(), "...");
-			Room.insert({
-				room: $('#roomName').val(),
-			});
+			Room.insert({ room: $('#roomName').val(), });
 			console.log("Logging in as", $('#roomName').val(), "...");
 			Session.set("room", $('#roomName').val());
 			Session.set("error", "");
 		}
-
 		refocus();
 	},
 	'click #enter'(event, instance) {
@@ -88,7 +83,6 @@ Template.login.events({
 			Session.set("error", "Error: Room does not exist");
 			console.log("Room does not exists.");
 		}
-
 		refocus();
 	}
 });
@@ -97,6 +91,9 @@ function refocus() {
 	$('#roomName').focus();    // Re-focus back into the textbox for continued typing
 }
 
+// End of Login ---------------------------------------------------------------
+
+// Player Implementation ------------------------------------------------------
 Template.player.onCreated(function playerOnCreated() {
 	console.log("player OnCreate");
 	SC.get("https://api.soundcloud.com/tracks/301162745", function(track) {
@@ -110,7 +107,6 @@ Template.player.onCreated(function playerOnCreated() {
 Template.player.events({
 	'click .pauseIcon': function(){
 		console.log('play/pause button clicked')
-
 		if(widget ===undefined){
 			initilizeWidget();
 			playNextSongFromQueue();
@@ -136,8 +132,8 @@ Template.player.events({
 	}
 });
 
-function togglePlayButton(){
-	widget.isPaused(function(paused){
+function togglePlayButton() {
+	widget.isPaused(function(paused) {
 		console.log("ispaused callback " + paused);
 		if(paused){
 			if($( ".pauseIcon" ).hasClass( "fa-pause" )){
@@ -146,8 +142,8 @@ function togglePlayButton(){
 			}	
 		} else {
 			if($( ".pauseIcon" ).hasClass( "fa-play" )){
-				$( ".pauseIcon" ).addClass("fa-pause");
 				$( ".pauseIcon" ).removeClass("fa-play");
+				$( ".pauseIcon" ).addClass("fa-pause");
 			}
 		}
 	});
@@ -190,15 +186,16 @@ function updateTrackUIDefault() {
 	widget = undefined;
 }
 
+// End of Player --------------------------------------------------------------
+
 Template.search.onCreated(function searchOnCreated() {
 	console.log("search on create");
 	SC.get('/tracks', {
 		  q:"kakuyon" 
-		}, function(tracks) {
-		  console.log(tracks);
-		  Session.set("searchedResults", tracks); 
-		});
-
+	}, function(tracks) {
+		console.log(tracks);
+		Session.set("searchedResults", tracks); 
+	});
 });
 
 Template.search.events({
@@ -215,6 +212,7 @@ Template.search.events({
 		  Session.set("searchedResults", tracks); 
 		});
 	},
+	// continuous search from user input in textField
 	'keyup #textToSearch': function(){
 		console.log("search keyup");
 		//$(".searchResults").html( $("#textToSearch").val()); 
@@ -229,7 +227,6 @@ Template.search.events({
 	},
 });
 
-
 Template.searchResults.helpers({
 	searchResults(){
 		return Session.get("searchedResults"); 
@@ -240,9 +237,8 @@ Template.track_search.events({
 	'click .addToQueButton': function(){
 		console.log("click track");
 		console.log(this);
-		if(hasAux){
-			$(".pauseIcon").show();
-		}
+		// user with aux can control play / pause
+		if(hasAux){ $(".pauseIcon").show(); }
 		$(".nextIcon").show(); 
 
 		Queue.insert({
@@ -273,21 +269,17 @@ Template.soundQueue.helpers({
 			console.log("Currently Playing Song changed on another device updating trackUI");
 		 	console.log(songPlaying[0].track);
 		 	updateTrackUI(songPlaying[0].track);
-		 	if(widget!==undefined)
-		 	{
-		 		widget.isPaused(function(paused){
+		 	if(widget!==undefined) {
+		 		widget.isPaused(function(paused) {
 		 			widget.pause(); 
 		 			widget.load(songPlaying[0].track.uri);
 			 		widget.bind(SC.Widget.Events.READY, function() {
-						if(hasAux & !paused)
-						{
+						if(hasAux & !paused) {
 				 			widget.play();
 				 		}
 				 		togglePlayButton();	
 					 });
 			 	});
-		 		
-		 		
 		 	}
 		} 
 	
