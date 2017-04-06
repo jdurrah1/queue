@@ -17,6 +17,7 @@ Session.set("queue", []);
 
 widget = undefined; 
 
+HasAux = false; 
 
 SC.initialize({
   client_id: 'fQCZrWnVDBI6WDkQDzyKPqY9GABRJ8Dq',
@@ -48,6 +49,17 @@ Template.player.events({
 	},
 	'click .nextIcon': function(){
 		playNextSongFromQueue();
+	},
+	'click .yesAuxButton': function(){
+		$("#player").show();
+		$(".aux-controls").hide();
+		HasAux = true; 
+	},
+	'click .noAuxButton': function(){
+		$("#player").show();
+		$(".aux-controls").hide();
+		$(".pauseIcon").hide();
+		HasAux = false; 
 	}
 });
 
@@ -82,7 +94,9 @@ function updateTrackUI(track) {
 	$("#trackArt").attr("src",artworkURL);
 	$("#artistName").text(track.user.username);
 	$("#trackName").text(track.title);
-	$(".pauseIcon").show();
+	if(HasAux){
+		$(".pauseIcon").show();
+	}
 	$(".nextIcon").show(); 
 }
 
@@ -152,7 +166,9 @@ Template.track_search.events({
 	'click .addToQueButton': function(){
 		console.log("click track");
 		console.log(this);
-		$(".pauseIcon").show();
+		if(HasAux){
+			$(".pauseIcon").show();
+		}	
 		$(".nextIcon").show(); 
 
 		Queue.insert({
@@ -185,8 +201,19 @@ Template.soundQueue.helpers({
 		 	updateTrackUI(songPlaying[0].track);
 		 	if(widget!==undefined)
 		 	{
-		 		widget.pause(); 
-		 		widget.load(songPlaying[0].track.uri);
+		 		widget.isPaused(function(paused){
+		 			widget.pause(); 
+		 			widget.load(songPlaying[0].track.uri);
+			 		widget.bind(SC.Widget.Events.READY, function() {
+						if(HasAux & !paused)
+						{
+				 			widget.play();
+				 		}
+				 		togglePlayButton();	
+					 });
+			 	});
+		 		
+		 		
 		 	}
 		} 
 	
@@ -211,6 +238,10 @@ Template.soundQueue.events({
 });
 
 function playNextSongFromQueue() {
+		if(widget===undefined)
+		{
+			initilizeWidget(); 
+		}
 		temp = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch();
 		if(temp.length >0){
 			var nextSong = temp[0]; 
@@ -222,13 +253,19 @@ function playNextSongFromQueue() {
 			Queue.remove(nextSong._id);
 
 			widget.bind(SC.Widget.Events.READY, function() {
-		 		widget.play();
+				if(HasAux)
+				{
+		 			widget.play();
+		 		}
 		 		togglePlayButton();
 			 });
 			widget.bind(SC.Widget.Events.FINISH, function() {
         		playNextSongFromQueue();
         		widget.bind(SC.Widget.Events.READY, function() {
+		 		if(HasAux)
+				{
 		 			widget.play();
+		 		}
 		 			togglePlayButton();
 		 		});
       		});

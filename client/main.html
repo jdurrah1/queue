@@ -17,7 +17,14 @@
 </template>
 
 <template name="player">
-  <div id="player"> 
+
+  <div class="aux-controls">
+      <h1>Do you Have the Aux</h1>
+    <button class="yesAuxButton">Yes</button>
+    <button class="noAuxButton">No</button>
+  </div>
+
+  <div style="display:none;" id="player"> 
     <img src="http://www.tunefind.com/i/album-art-empty.png" class="w3-round" alt="Empty" id="trackArt" style="width:80%;height:80%;max-width:400px">
 
     <div id="trackName" style="color:black;">Click Play</div>
