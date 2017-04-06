@@ -63,43 +63,60 @@
 
 
 <template name="search">
+  <center>
   <h1>Search Music </h1>
   <input type = "text" id = "textToSearch"  >
   <button class = "searchBtn">search</button>
+  </center><br/>
   {{>searchResults}}
 </template>
 
 <template name ="searchResults">
   <div class="searchResults"> </div>
+    <ul class="w3-ul w3-card-4" >
     {{#each searchResults}}
       {{> track_search}}
     {{/each}}
+    </ul>
 </template>
 
 <template name="soundQueue">
-  <button id='exit'>Exit Room</button>
+  <center>
   <h1>Queue</h1>
   <button id="playQueue">Play Queue</button>
-    {{#each queueValues}}
-      {{> track_queue}}
-    {{/each}}
+  </center><br/>
+  <ul class="w3-ul w3-card-4" >
+  {{#each queueValues}}
+    {{> track_queue}}
+  {{/each}}
+  </ul>
+  <br/>
+  <center><button id='exit'>Exit Room</button></center>
 </template>
 
 <template name="track_search">
+  <style>
+  </style>
   <li class="w3-padding-16">
     <span class="track w3-button w3-white w3-large w3-right addToQueButton">+</span>
-    <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px; margin-left:10px">
-    <span class="w3-medium">{{title}}</span><br>
-    <span>{{artist}}</span>
+    <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px">
+    <span class="w3-medium" 
+          style="font-weight:bold; white-space: nowrap; overflow: hidden; display: block; text-overflow: ellipsis;"
+    > {{title}}</span>
+    <span style="white-space: nowrap; overflow: hidden; display: block; text-overflow: ellipsis;"
+    >{{user.username}}</span>
   </li>
 </template>
 
 <template name="track_queue">
   <li class="w3-padding-16">
     <span class="track w3-button w3-white w3-xlarge w3-right removeFromQueButton">×</span>
-    <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right " style="width:50px; margin-left:10px">
-    <span class="w3-medium">{{title}}</span><br>
-    <span>{{artist}}</span>
+    <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right " style="width:50px">
+    <span class="w3-medium" 
+          style="font-weight:bold; white-space: nowrap; overflow: hidden; display: block; text-overflow: ellipsis;"
+    > {{title}}</span>
+    <span style="white-space: nowrap; overflow: hidden; display: block; text-overflow: ellipsis;"
+    >{{artist}}</span>
   </li>
 </template>
 
@@ -108,11 +125,11 @@
   <div class="w3-light-grey w3-content" style="max-width:1600px">
 
   <!-- Queue/menu -->
-  <nav class="w3-sidebar w3-bar-block w3-white w3-animate-right w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold;right:0" id="mySidebar"><br>
+  <nav class="w3-sidebar w3-bar-block w3-border-right w3-white w3-border w3-animate-right w3-text-grey w3-collapse w3-top" style="z-index:3;width:300px;right:0" id="mySidebar"><br>
     {{>soundQueue}}
   </nav>
   <!--Search/menu -->
-  <nav class="w3-sidebar w3-bar-block w3-white w3-animate-left w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold" id="mySidebar2"><br>
+  <nav class="w3-sidebar w3-bar-block w3-border-left w3-white w3-border w3-animate-left w3-text-grey w3-collapse w3-top" style="z-index:3;width:300px" id="mySidebar2"><br>
     {{>search}}
   </nav>
 
