@@ -2,17 +2,13 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session'
 import { Mongo } from 'meteor/mongo';
-
 import './main.html';
 
 Queue = new Mongo.Collection('queue');
-
 Session.set("searchedResults", []);
-
 Session.set("queue", []);
 
 widget = undefined; 
-
 
 
 SC.initialize({
@@ -21,17 +17,13 @@ SC.initialize({
 });
 
 Template.player.onCreated(function playerOnCreated() {
-
-
 	console.log("player OnCreate");
 	SC.get("https://api.soundcloud.com/tracks/301162745", function(track) {
 		console.log("player_SC_get_callback");
 		updateTrackUI(track);
-	 //SC.oEmbed(track.permalink_url, document.getElementById('player'));
-	 	console.log(track);	
+		//SC.oEmbed(track.permalink_url, document.getElementById('player'));
+		console.log(track);	
 	});
-
-
 });
 
 Template.player.events({
@@ -43,43 +35,36 @@ Template.player.events({
 		}
 		widget.toggle(); 
 		togglePlayButton();
-
 	},
 	'click .nextIcon': function(){
 		playNextSongFromQueue();
 	}
-
 });
 
 function togglePlayButton(){
-
-
-		widget.isPaused(function(paused){
-			console.log("ispaused callback " + paused);
-			if(paused){
-				if($( ".pauseIcon" ).hasClass( "fa-pause" )){
-					$( ".pauseIcon" ).removeClass("fa-pause");
-					$( ".pauseIcon" ).addClass("fa-play");
-				}	
+	widget.isPaused(function(paused){
+		console.log("ispaused callback " + paused);
+		if(paused){
+			if($( ".pauseIcon" ).hasClass( "fa-pause" )){
+				$( ".pauseIcon" ).removeClass("fa-pause");
+				$( ".pauseIcon" ).addClass("fa-play");
+			}	
+		} else {
+			if($( ".pauseIcon" ).hasClass( "fa-play" )){
+				$( ".pauseIcon" ).addClass("fa-pause");
+				$( ".pauseIcon" ).removeClass("fa-play");
 			}
-			else {
-				if($( ".pauseIcon" ).hasClass( "fa-play" )){
-					$( ".pauseIcon" ).addClass("fa-pause");
-					$( ".pauseIcon" ).removeClass("fa-play");
-				}
-			}
-		});
+		}
+	});
 }
 
-function initilizeWidget()
-{
+function initilizeWidget() {
 	console.log('initilizizing Widget')
-	 widgetIframe = document.getElementById('sc-widget'),
-     widget       = SC.Widget(widgetIframe);
+	widgetIframe = document.getElementById('sc-widget'),
+	widget = SC.Widget(widgetIframe);
 }
 
-function updateTrackUI(track)
-{
+function updateTrackUI(track) {
 	var artworkURL = "http://www.tunefind.com/i/album-art-empty.png";
 	if (track.artwork_url) {
 		artworkURL = track.artwork_url.replace("large", "t500x500");
@@ -113,27 +98,25 @@ Template.search.events({
 		  console.log(tracks);
 		  Session.set("searchedResults", tracks); 
 		});
-
 	},
 	'keyup #textToSearch': function(){
-	console.log("search keyup");
-	//$(".searchResults").html( $("#textToSearch").val()); 
+		console.log("search keyup");
+		//$(".searchResults").html( $("#textToSearch").val()); 
 
-	query = $("#textToSearch").val();
-	SC.get('/tracks', {
-	  q:query 
-	}, function(tracks) {
-	  console.log(tracks);
-	  Session.set("searchedResults", tracks); 
-	});
-
+		query = $("#textToSearch").val();
+		SC.get('/tracks', {
+			q:query 
+		}, function(tracks) {
+			console.log(tracks);
+			Session.set("searchedResults", tracks); 
+		});
 	},
 });
 
 
 Template.searchResults.helpers({
 	searchResults(){
-		return  Session.get("searchedResults"); 
+		return Session.get("searchedResults"); 
 	}
 });
 
@@ -142,7 +125,6 @@ Template.track_search.events({
 		console.log("click track");
 		console.log(this);
 
-
 		Queue.insert({
 			this,
 			artist: this.user.username,
@@ -150,15 +132,12 @@ Template.track_search.events({
 			title: this.title,
 			createdAt: new Date(), 
 		});
-
 		/*
 		var temp = Session.get("queue");
 		temp.push(this);
 		Session.set("queue", temp);
 		*/
-
 	}
-
 });
 
 Template.soundQueue.helpers({
@@ -179,16 +158,11 @@ Template.soundQueue.events({
 		}
 		console.log(widget);
 
-
 		playNextSongFromQueue();
-
-		
 	}
-
 });
 
-function playNextSongFromQueue()
-{
+function playNextSongFromQueue() {
 		temp = Queue.find({}, { sort: { createdAt: -1 } }).fetch(); 
 
 		if(temp.length >0){
@@ -224,7 +198,6 @@ function playNextSongFromQueue()
 		*/
 }
 
-
 Template.track_queue.events({
 	'click .removeFromQueButton': function(){
 		console.log("remove from que");
@@ -232,7 +205,6 @@ Template.track_queue.events({
 		Queue.remove(this._id);
 		
 		/*var temp = Session.get("queue");
-
 		
 		//find index of what to delete
 		var index = -1; 
