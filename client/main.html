@@ -6,15 +6,23 @@
 
 <body>
 
-{{>newLayout}}
+    {{#if currentUser}}
+        {{> newLayout}}
+    {{else}}
+      {{>login}}
+    {{/if}}
 
 </body>
+
+<template name="login">
+  {{> loginButtons}}
+</template>
 
 
 <template name="player">
 <div id="player"> 
 
-<img src="" class="w3-round" alt="Empty" id="trackArt" style="width:80%;height:80%;max-width:400px">
+<img src="http://www.tunefind.com/i/album-art-empty.png" class="w3-round" alt="Empty" id="trackArt" style="width:80%;height:80%;max-width:400px">
 
 <div id="trackName" style="color:black;">Click Play</div>
 <div id="artistName" style="color:red;"> To Play Songs from Queue</div>
@@ -52,6 +60,7 @@
 
 
 <template name="soundQueue">
+  {{> loginButtons}}
   <h1>Queue</h1>
   <button id="playQueue">Play Queue</button>
         {{#each queueValues}}
