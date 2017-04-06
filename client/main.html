@@ -1,23 +1,49 @@
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+  body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+  .w3-third img{margin-bottom: -6px; opacity: 0.8; cursor: pointer}
+  .w3-third img:hover{opacity: 1}
+  </style>
   <title>queue</title>
    <script src="//connect.soundcloud.com/sdk.js"></script>
    <script src="../js/soundCloudWidget.js"></script>
+   
 </head>
 
 <body>
-  {{#if currentUser}}
+  {{#if room}}
     {{> newLayout}}
   {{else}}
-    {{>login}}
+    <div class='login'>
+      {{> login}}
+    </div>
   {{/if}}
 </body>
 
-<template name="login">
-  {{> loginButtons}}
+<template name='login'>
+  <center>
+    <h1>Queue</h1>
+    <span class='roomName-label'>Room</span><br/>
+    <input type='text' id='roomName'/><br/><br/>
+    <button id='new-room'>Create Room</button><br/><br/>
+    <button id='enter'>Enter Room</button>
+    <br/><span class='error-label' style='color:red'>{{errorMessage}}</span>
+  </center>
 </template>
 
 <template name="player">
-  <div id="player"> 
+  <div class="aux-controls">
+    <h1>Do you Have the Aux</h1>
+    <button class="yesAuxButton">Yes</button>
+    <button class="noAuxButton">No</button>
+  </div>
+ 
+  <div style="display:none;" id="player"> 
     <img src="http://www.tunefind.com/i/album-art-empty.png" class="w3-round" alt="Empty" id="trackArt" style="width:80%;height:80%;max-width:400px">
 
     <div id="trackName" style="color:black;">Click Play</div>
@@ -55,7 +81,7 @@
 
 
 <template name="soundQueue">
-  {{> loginButtons}}
+  <button id='exit'>Exit Room</button>
   <h1>Queue</h1>
   <button id="playQueue">Play Queue</button>
     {{#each queueValues}}
@@ -68,7 +94,7 @@
     <span class="track w3-button w3-white w3-xlarge w3-right addToQueButton">+</span>
     <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px">
     <span class="w3-medium">{{title}}</span><br>
-    <span>{{user.username}}</span>
+    <span>{{username}}</span>
   </li>
 </template>
 
@@ -82,23 +108,14 @@
 </template>
 
 <template name="newLayout">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <style>
-  body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-  .w3-third img{margin-bottom: -6px; opacity: 0.8; cursor: pointer}
-  .w3-third img:hover{opacity: 1}
-  </style>
+  
   <div class="w3-light-grey w3-content" style="max-width:1600px">
 
   <!-- Queue/menu -->
   <nav class="w3-sidebar w3-bar-block w3-white w3-animate-right w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold;right:0" id="mySidebar"><br>
     {{>soundQueue}}
   </nav>
-  <!--Search/menue -->
+  <!--Search/menu -->
   <nav class="w3-sidebar w3-bar-block w3-white w3-animate-left w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:300px;font-weight:bold" id="mySidebar2"><br>
     {{>search}}
   </nav>

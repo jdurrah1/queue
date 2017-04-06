@@ -2,24 +2,100 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session'
 import { Mongo } from 'meteor/mongo';
-import { Accounts } from 'meteor/accounts-base';
 import './main.html';
 
-Accounts.ui.config({
-  passwordSignupFields: 'USERNAME_ONLY',
-});
-
 Queue = new Mongo.Collection('queue');
+Room = new Meteor.Collection('room');
+SongsPlayed = new Mongo.Collection('songsplayed');
+
 Session.set("searchedResults", []);
 Session.set("queue", []);
+Session.set("room", "");
+Session.set("error", "")
 
-widget = undefined; 
-
+// GLOBAL VARIABLES -----------------------------------------------------------
+widget = undefined;
+hasAux = false;
 
 SC.initialize({
   client_id: 'fQCZrWnVDBI6WDkQDzyKPqY9GABRJ8Dq',
   redirect_uri: 'http://external.codecademy.com/soundcloud.html'
 });
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+// Accessor functions available from the 'body' template in HTML 
+Template.body.helpers({
+	room() {
+		return Session.get("room");
+	},
+});
+
+// On the 'login' template being rendered
+Template.login.rendered = function () {
+	// On start, focus into the textbox
+	refocus();
+};
+
+// Accessor functions available from the 'login' template in HTML 
+Template.login.helpers({
+	errorMessage() {
+		return Session.get("error");
+	}
+});
+
+// Event handlers for elements in the 'login' template
+Template.login.events({
+	'click #new-room'(event, instance) {
+		// Username textfield is empty
+		if (!$('#roomName').val()) {
+			Session.set("error", "Error: Please enter a room");
+			console.log("Room is empty");
+		} 
+		// Username exists in Room
+		else if (Room.find({ room: $('#roomName').val()}).count() != 0) {
+			Session.set("error", "Error: Room already exists");
+			console.log("Room already exists.");
+		} 
+		// Creates new room in Room
+		else {
+			console.log("Creating", $('#roomName').val(), "...");
+			Room.insert({
+				room: $('#roomName').val(),
+			});
+			console.log("Logging in as", $('#roomName').val(), "...");
+			Session.set("room", $('#roomName').val());
+			Session.set("error", "");
+		}
+
+		refocus();
+	},
+	'click #enter'(event, instance) {
+		// RoomName textfield is empty
+		if (!$('#roomName').val()) {
+			Session.set("error", "Error: Please enter a room");
+			console.log("Room is empty");
+		} 
+		// Logs in as room
+		else if (Room.find({ room: $('#roomName').val()}).count() != 0) {
+			console.log("Logging in as", $('#roomName').val(), "...");
+			Session.set("room", $('#roomName').val());
+			Session.set("error", "");
+		} 
+		// Room doesn't exist
+		else {
+			Session.set("error", "Error: Room does not exist");
+			console.log("Room does not exists.");
+		}
+
+		refocus();
+	}
+});
+
+function refocus() {
+	$('#roomName').focus();    // Re-focus back into the textbox for continued typing
+}
 
 Template.player.onCreated(function playerOnCreated() {
 	console.log("player OnCreate");
@@ -46,6 +122,17 @@ Template.player.events({
 	},
 	'click .nextIcon': function(){
 		playNextSongFromQueue();
+	},
+	'click .yesAuxButton': function(){
+		$("#player").show();
+		$(".aux-controls").hide();
+		hasAux = true; 
+	},
+	'click .noAuxButton': function(){
+		$("#player").show();
+		$(".aux-controls").hide();
+		$(".pauseIcon").hide();
+		hasAux = false; 
 	}
 });
 
@@ -80,7 +167,9 @@ function updateTrackUI(track) {
 	$("#trackArt").attr("src",artworkURL);
 	$("#artistName").text(track.user.username);
 	$("#trackName").text(track.title);
-	$(".pauseIcon").show();
+	if(hasAux){
+		$(".pauseIcon").show();
+	}
 	$(".nextIcon").show(); 
 }
 
@@ -151,7 +240,9 @@ Template.track_search.events({
 	'click .addToQueButton': function(){
 		console.log("click track");
 		console.log(this);
-		$(".pauseIcon").show();
+		if(hasAux){
+			$(".pauseIcon").show();
+		}
 		$(".nextIcon").show(); 
 
 		Queue.insert({
@@ -160,7 +251,7 @@ Template.track_search.events({
 			imageSrc:this.artwork_url,
 			title: this.title,
 			createdAt: new Date(), 
-			house: Meteor.user().username,
+			room: Session.get("room"),
 		});
 		/*
 		var temp = Session.get("queue");
@@ -172,7 +263,36 @@ Template.track_search.events({
 
 Template.soundQueue.helpers({
 	queueValues(){
-		toReturn = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch(); 
+		var songPlaying = SongsPlayed.find({room: Session.get("room") }, { sort: { createdAt: -1 } }).fetch(); 
+		
+		console.log("song being played");
+		console.log(songPlaying[0]);
+
+		if($("#trackName").text() !== songPlaying[0].track.title)
+		{
+			console.log("Currently Playing Song changed on another device updating trackUI");
+		 	console.log(songPlaying[0].track);
+		 	updateTrackUI(songPlaying[0].track);
+		 	if(widget!==undefined)
+		 	{
+		 		widget.isPaused(function(paused){
+		 			widget.pause(); 
+		 			widget.load(songPlaying[0].track.uri);
+			 		widget.bind(SC.Widget.Events.READY, function() {
+						if(hasAux & !paused)
+						{
+				 			widget.play();
+				 		}
+				 		togglePlayButton();	
+					 });
+			 	});
+		 		
+		 		
+		 	}
+		} 
+	
+		toReturn = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch(); 
+		console.log('YOOOO');
 		console.log(toReturn);
 		return  toReturn;  //Session.get("queue"); 
 	}
@@ -189,30 +309,43 @@ Template.soundQueue.events({
 		console.log(widget);
 
 		playNextSongFromQueue();
+	},
+	'click #exit': function() {
+		console.log("Exiting out of " + Session.get("room"));
+		Session.set("room", "");
 	}
 });
 
 function playNextSongFromQueue() {
-		temp = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch();
+		if(widget===undefined)
+		{
+			initilizeWidget(); 
+		}
+		temp = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch();
 		if(temp.length >0){
 			var nextSong = temp[0]; 
 			console.log(nextSong);
 			console.log(nextSong.this.uri);
 			updateTrackUI(nextSong.this);
 			widget.load(nextSong.this.uri);
+			updatedSongsPlayed(nextSong.this);
 			Queue.remove(nextSong._id);
 
 			widget.bind(SC.Widget.Events.READY, function() {
-		 		widget.play();
+		 		if (hasAux) {
+					widget.play();
+				}
 		 		togglePlayButton();
 			 });
 			widget.bind(SC.Widget.Events.FINISH, function() {
-        		playNextSongFromQueue();
-        		widget.bind(SC.Widget.Events.READY, function() {
-		 			widget.play();
-		 			togglePlayButton();
+				playNextSongFromQueue();
+				widget.bind(SC.Widget.Events.READY, function() {
+					if (hasAux) {
+						widget.play();
+					}
+					togglePlayButton();
 		 		});
-      		});
+			});
 		}
 		else{
 			updateTrackUIDefault();
@@ -231,7 +364,22 @@ function playNextSongFromQueue() {
 		*/
 }
 
+function updatedSongsPlayed(track){
+	console.log("updated Songs Played");
 
+	console.log(track);
+
+
+		SongsPlayed.insert({
+			track,
+			artist: track.user.username,
+			imageSrc:track.artwork_url,
+			title: track.title,
+			createdAt: new Date(), 
+			room: Session.get("room"),
+		});
+
+}
 
 Template.track_queue.events({
 	'click .removeFromQueButton': function(){
