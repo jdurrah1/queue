@@ -20,7 +20,7 @@ Template.player.onCreated(function playerOnCreated() {
 	console.log("player OnCreate");
 	SC.get("https://api.soundcloud.com/tracks/301162745", function(track) {
 		console.log("player_SC_get_callback");
-		updateTrackUI(track);
+		//updateTrackUI(track);
 		//SC.oEmbed(track.permalink_url, document.getElementById('player'));
 		console.log(track);	
 	});
@@ -32,9 +32,12 @@ Template.player.events({
 
 		if(widget ===undefined){
 			initilizeWidget();
+			playNextSongFromQueue();
 		}
-		widget.toggle(); 
-		togglePlayButton();
+		else{
+			widget.toggle(); 
+			togglePlayButton();
+		}
 	},
 	'click .nextIcon': function(){
 		playNextSongFromQueue();
