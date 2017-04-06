@@ -76,6 +76,7 @@ function initilizeWidget()
 	console.log('initilizizing Widget')
 	 widgetIframe = document.getElementById('sc-widget'),
      widget       = SC.Widget(widgetIframe);
+
 }
 
 function updateTrackUI(track)
@@ -198,12 +199,13 @@ function playNextSongFromQueue()
 			widget.bind(SC.Widget.Events.READY, function() {
 		 		widget.play();
 		 		togglePlayButton();
+
 			 });
 			widget.bind(SC.Widget.Events.FINISH, function() {
         		playNextSongFromQueue();
         		widget.bind(SC.Widget.Events.READY, function() {
 		 			widget.play();
-		 			togglePlayButton();
+		 			togglePlayButton();	 			
 		 		});
       		});
 		}

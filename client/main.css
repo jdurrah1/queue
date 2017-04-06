@@ -12,3 +12,8 @@ li {
 .controls {
 	bottom: 70px;
 }
+
+.mainImage {
+    display: block;
+    margin: 0 auto;
+}
