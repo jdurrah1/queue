@@ -1,11 +1,13 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session'
+import { Session } from 'meteor/session';
 import { Mongo } from 'meteor/mongo';
 import './main.html';
 
 Queue = new Mongo.Collection('queue');
+
 Room = new Meteor.Collection('room');
+
 SongsPlayed = new Mongo.Collection('songsplayed');
 
 Session.set("searchedResults", []);
@@ -14,9 +16,11 @@ Session.set("room", "");
 Session.set("error", "")
 Session.set("nowPlaying")
 
+
 // GLOBAL VARIABLES -----------------------------------------------------------
 widget = undefined;
 hasAux = false;
+
 
 SC.initialize({
   client_id: 'fQCZrWnVDBI6WDkQDzyKPqY9GABRJ8Dq',
@@ -163,6 +167,7 @@ function updateTrackUI(track) {
 	$("#trackArt").attr("src",artworkURL);
 	$("#artistName").text(track.user.username);
 	$("#trackName").text(track.title);
+
 	if(hasAux){
 		$(".pauseIcon").show();
 	}
@@ -262,27 +267,34 @@ Template.soundQueue.helpers({
 		var songPlaying = SongsPlayed.find({room: Session.get("room") }, { sort: { createdAt: -1 } }).fetch(); 
 		
 		console.log("song being played");
-		console.log(songPlaying[0]);
+		if(songPlaying.length >0){
+			console.log(songPlaying[0]);
+			if($("#trackName").text() !== songPlaying[0].track.title)
+			{
+				console.log("Currently Playing Song changed on another device updating trackUI");
+			 	console.log(songPlaying[0].track);
+			 	updateTrackUI(songPlaying[0].track);
+			 	if(widget!==undefined)
+			 	{
+			 		widget.isPaused(function(paused){
+			 			widget.pause(); 
+			 			widget.load(songPlaying[0].track.uri);
+				 		widget.bind(SC.Widget.Events.READY, function() {
 
-		if($("#trackName").text() !== songPlaying[0].track.title)
-		{
-			console.log("Currently Playing Song changed on another device updating trackUI");
-		 	console.log(songPlaying[0].track);
-		 	updateTrackUI(songPlaying[0].track);
-		 	if(widget!==undefined) {
-		 		widget.isPaused(function(paused) {
-		 			widget.pause(); 
-		 			widget.load(songPlaying[0].track.uri);
-			 		widget.bind(SC.Widget.Events.READY, function() {
-						if(hasAux & !paused) {
-				 			widget.play();
-				 		}
-				 		togglePlayButton();	
-					 });
-			 	});
-		 	}
+							if(hasAux & !paused)
+							{
+					 			widget.play();
+					 		}
+					 		togglePlayButton();	
+						 });
+				 	});
+			 		
+			 		
+			 	}
+			}
 		} 
 	
+
 		toReturn = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch(); 
 		console.log('YOOOO');
 		console.log(toReturn);
@@ -313,6 +325,7 @@ function playNextSongFromQueue() {
 		{
 			initilizeWidget(); 
 		}
+
 		temp = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch();
 		if(temp.length >0){
 			var nextSong = temp[0]; 
@@ -324,6 +337,7 @@ function playNextSongFromQueue() {
 			Queue.remove(nextSong._id);
 
 			widget.bind(SC.Widget.Events.READY, function() {
+
 		 		if (hasAux) {
 					widget.play();
 				}
@@ -360,7 +374,6 @@ function updatedSongsPlayed(track){
 	console.log("updated Songs Played");
 
 	console.log(track);
-
 
 		SongsPlayed.insert({
 			track,
