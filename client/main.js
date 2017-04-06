@@ -10,6 +10,8 @@ Accounts.ui.config({
 });
 
 Queue = new Mongo.Collection('queue');
+SongsPlayed = new Mongo.Collection('songsplayed');
+
 Session.set("searchedResults", []);
 Session.set("queue", []);
 
@@ -109,7 +111,6 @@ Template.search.onCreated(function searchOnCreated() {
 		  console.log(tracks);
 		  Session.set("searchedResults", tracks); 
 		});
-
 });
 
 Template.search.events({
@@ -172,6 +173,23 @@ Template.track_search.events({
 
 Template.soundQueue.helpers({
 	queueValues(){
+		var songPlaying = SongsPlayed.find({house: Meteor.user().username }, { sort: { createdAt: -1 } }).fetch(); 
+		
+		console.log("song being played");
+		console.log(songPlaying[0]);
+
+		if($("#trackName").text() !== songPlaying[0].track.title)
+		{
+			console.log("Currently Playing Song changed on another device updating trackUI");
+		 	console.log(songPlaying[0].track);
+		 	updateTrackUI(songPlaying[0].track);
+		 	if(widget!==undefined)
+		 	{
+		 		widget.pause(); 
+		 		widget.load(songPlaying[0].track.uri);
+		 	}
+		} 
+	
 		toReturn = Queue.find({house: Meteor.user().username }, { sort: { createdAt: 1 } }).fetch(); 
 		console.log(toReturn);
 		return  toReturn;  //Session.get("queue"); 
@@ -200,6 +218,7 @@ function playNextSongFromQueue() {
 			console.log(nextSong.this.uri);
 			updateTrackUI(nextSong.this);
 			widget.load(nextSong.this.uri);
+			updatedSongsPlayed(nextSong.this);
 			Queue.remove(nextSong._id);
 
 			widget.bind(SC.Widget.Events.READY, function() {
@@ -229,6 +248,23 @@ function playNextSongFromQueue() {
 			Session.set("queue", temp);
 		}
 		*/
+}
+
+function updatedSongsPlayed(track){
+	console.log("updated Songs Played");
+
+	console.log(track);
+
+
+		SongsPlayed.insert({
+			track,
+			artist: track.user.username,
+			imageSrc:track.artwork_url,
+			title: track.title,
+			createdAt: new Date(), 
+			house: Meteor.user().username,
+		});
+
 }
 
 
