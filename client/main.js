@@ -95,8 +95,8 @@ function updateTrackUIDefault() {
 	$(".nextIcon").hide(); 
 	widget.pause(); 
 	if($( ".pauseIcon" ).hasClass( "fa-pause" )){
-				$( ".pauseIcon" ).removeClass("fa-pause");
-				$( ".pauseIcon" ).addClass("fa-play");
+		$( ".pauseIcon" ).removeClass("fa-pause");
+		$( ".pauseIcon" ).addClass("fa-play");
 	}	
 	widget = undefined;
 }
