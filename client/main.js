@@ -80,7 +80,11 @@ function initilizeWidget()
 
 function updateTrackUI(track)
 {
-	$("#trackArt").attr("src",track.artwork_url);
+	var artworkURL = "http://www.tunefind.com/i/album-art-empty.png";
+	if (track.artwork_url) {
+		artworkURL = track.artwork_url.replace("large", "t500x500");
+	}
+	$("#trackArt").attr("src",artworkURL);
 	$("#artistName").text(track.user.username);
 	$("#trackName").text(track.title);
 }
