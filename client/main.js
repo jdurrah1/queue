@@ -239,8 +239,10 @@ Template.searchResults.helpers({
 });
 
 Template.track_search.events({
-	'click .addToQueButton': function(){
+	'click .addToQueButton': function(e){
+
 		console.log("click track");
+		console.log($(e.target).html("&#10003;"));
 		console.log(this);
 		// user with aux can control play / pause
 		if(hasAux){ $(".pauseIcon").show(); }
@@ -304,7 +306,6 @@ Template.soundQueue.helpers({
 
 Template.soundQueue.events({
 	'click #AddtoQueue': function(){
-
         document.getElementById("mySidebar2").style.display = "none";
         document.getElementById("myOverlay").style.display = "none";
         document.getElementById("mySidebar").style.display = "none";
