@@ -234,7 +234,7 @@ Template.search.events({
 
 Template.searchResults.helpers({
 	searchResults(){
-		$(".addToQueButton").html("x")
+		$(".addToQueButton").html("+")
 		return Session.get("searchedResults"); 
 	}
 });
