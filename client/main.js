@@ -303,16 +303,17 @@ Template.soundQueue.helpers({
 });
 
 Template.soundQueue.events({
-	'click #playQueue': function(){
-		console.log("play queue");
-		if(widget===undefined){
-			var iframeElement   = document.querySelector('iframe');
-			var iframeElementID = iframeElement.id;
-			widget         = SC.Widget(iframeElement);
-		}
-		console.log(widget);
+	'click #AddtoQueue': function(){
 
-		playNextSongFromQueue();
+        document.getElementById("mySidebar2").style.display = "none";
+        document.getElementById("myOverlay").style.display = "none";
+        document.getElementById("mySidebar").style.display = "none";
+
+        document.getElementById("mySidebar2").style.display = "block";
+        document.getElementById("myOverlay").style.display = "block";
+        console.log("openSearchCloseQueue");
+
+      
 	},
 	'click #exit': function() {
 		console.log("Exiting out of " + Session.get("room"));
@@ -411,4 +412,6 @@ Template.track_queue.events({
 	}
 
 });
+
+
 

@@ -83,7 +83,7 @@
 <template name="soundQueue">
   <center>
   <h1>Queue</h1>
-  <button id="playQueue">Play Queue</button>
+  <button id="AddtoQueue" >Add to Queue</button>
   </center><br/>
   <ul class="w3-ul w3-card-4" >
   {{#each queueValues}}
@@ -92,11 +92,10 @@
   </ul>
   <br/>
   <center><button id='exit'>Exit Room</button></center>
+
 </template>
 
 <template name="track_search">
-  <style>
-  </style>
   <li class="w3-padding-16">
     <span class="track w3-button w3-white w3-large w3-right addToQueButton">+</span>
     <img src={{artwork_url}} class="w3-left w3-circle w3-margin-right" style="width:50px">
@@ -178,7 +177,9 @@
       function w3_close2() {
         document.getElementById("mySidebar2").style.display = "none";
         document.getElementById("myOverlay").style.display = "none";
+        document.getElementById("mySidebar").style.display = "none";
       }
+
     </script>
 
   </div>
