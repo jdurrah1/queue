@@ -37,11 +37,36 @@
 </template>
 
 <template name="player">
+  <style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+</style>
 
   <div class="aux-controls">
     <h1>Do you Have the Aux</h1>
-    <button class="yesAuxButton">Yes</button>
-    <button class="noAuxButton">No</button>
+    <button class="yesAuxButton  tooltip">Yes<span class="tooltiptext">Audio plays from your device</span></button>
+    <button class="noAuxButton  tooltip">No<span class="tooltiptext">Audio Does't play from your device</span></button>
   </div>
  
   <div style="display:none;" id="player"> 
