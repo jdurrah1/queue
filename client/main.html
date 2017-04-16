@@ -135,6 +135,8 @@
 <template name="track_queue">
   <li class="w3-padding-16">
     <span class="track w3-button w3-white w3-xlarge w3-right removeFromQueButton">×</span>
+    <span class="track w3-button w3-white w3-xlarge w3-right likeButtonDisabled likeButton"><i class="fa fa-heart" aria-hidden="true"></i></span>
+    <span class="track w3-button w3-white w3-xlarge w3-right likeButtonEnabled"><i class="fa fa-heart" aria-hidden="true" style="color:#DD1C1A"></i></span>
     <img src={{imageSrc}} class="w3-left w3-circle w3-margin-right " style="width:50px">
     <span class="w3-medium" 
           style="font-weight:bold; white-space: nowrap; overflow: hidden; display: block; text-overflow: ellipsis;"
