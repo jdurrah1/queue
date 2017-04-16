@@ -256,6 +256,7 @@ Template.track_search.events({
 			title: this.title,
 			createdAt: new Date(), 
 			room: Session.get("room"),
+			likes:0
 		});
 		/*
 		var temp = Session.get("queue");
@@ -298,7 +299,7 @@ Template.soundQueue.helpers({
 		} 
 	
 
-		toReturn = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch(); 
+		toReturn = Queue.find({room: Session.get("room") }, { sort: { likes:-1, createdAt: 1 } }).fetch(); 
 		console.log('YOOOO');
 		console.log(toReturn);
 		return  toReturn;  //Session.get("queue"); 
@@ -385,6 +386,7 @@ function updatedSongsPlayed(track){
 			title: track.title,
 			createdAt: new Date(), 
 			room: Session.get("room"),
+			likes: 0 //todo : update
 		});
 
 }
@@ -395,22 +397,14 @@ Template.track_queue.events({
 		console.log(this);
 		Queue.remove(this._id);
 		
-		/*var temp = Session.get("queue");
+	}, 
+	'click .likeButton': function(){
+		//Queue.update({_id: "LrCgscqN7k7rYcXRz"}, {$inc:{likes:1}})
+		console.log("like song:");
+		console.log(this);
+		Queue.update({_id: this._id}, {$inc:{likes:1}});
 		
-		//find index of what to delete
-		var index = -1; 
-		for(var i =0; i < temp.length; i++){
-			if(temp[i].id === this.id){
-				index = i; 
-				break
-			}
-		}
-		console.log(index);
-		if (index > -1) {
-		    temp.splice(index, 1);
-		}
-		Session.set("queue", temp);
-		*/
+
 	}
 
 });
