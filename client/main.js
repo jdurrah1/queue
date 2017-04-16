@@ -398,12 +398,16 @@ Template.track_queue.events({
 		Queue.remove(this._id);
 		
 	}, 
-	'click .likeButton': function(){
+	'click .likeButton': function(e){
 		//Queue.update({_id: "LrCgscqN7k7rYcXRz"}, {$inc:{likes:1}})
 		console.log("like song:");
 		console.log(this);
 		Queue.update({_id: this._id}, {$inc:{likes:1}});
-		
+		console.log($(e.target))
+		$(e.target).css("color", "#DD1C1A");
+		$(e.target).removeClass("likeButton");
+
+
 
 	}
 
