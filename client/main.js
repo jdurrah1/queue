@@ -330,7 +330,7 @@ function playNextSongFromQueue() {
 			initilizeWidget(); 
 		}
 
-		temp = Queue.find({room: Session.get("room") }, { sort: { createdAt: 1 } }).fetch();
+		temp = Queue.find({room: Session.get("room") }, { sort: { likes:-1, createdAt: 1 } }).fetch();
 		if(temp.length >0){
 			var nextSong = temp[0]; 
 			console.log(nextSong);
