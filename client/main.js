@@ -86,8 +86,6 @@ Template.player.onCreated(function playerOnCreated() {
   console.log("player OnCreate");
   SC.get("https://api.soundcloud.com/tracks/301162745", function(track) {
     console.log("player_SC_get_callback");
-    //updateTrackUI(track);
-    //SC.oEmbed(track.permalink_url, document.getElementById('player'));
     console.log(track);
   });
 });
@@ -182,7 +180,6 @@ Template.search.onCreated(function searchOnCreated() {
 Template.search.events({
   'click .searchBtn': function() {
     console.log("search_btnCLick");
-    //$(".searchResults").html( $("#textToSearch").val()); 
     query = $("#textToSearch").val();
     SC.get('/tracks', {
       q: query
@@ -194,7 +191,6 @@ Template.search.events({
   // continuous search from user input in textField
   'keyup #textToSearch': function() {
     console.log("search keyup");
-    //$(".searchResults").html( $("#textToSearch").val()); 
     query = $("#textToSearch").val();
     SC.get('/tracks', {
       q: query
@@ -215,7 +211,6 @@ Template.track_search.events({
     console.log("click track");
     console.log($(e.target).html("&#10003;"));
     console.log(this);
-    // user with aux can control play / pause
     if (hasAux) { $(".pauseIcon").show(); }
     $(".nextIcon").show();
     Queue.insert({
@@ -227,11 +222,6 @@ Template.track_search.events({
       room: Session.get("room"),
       likes: 0
     });
-    /*
-    var temp = Session.get("queue");
-    temp.push(this);
-    Session.set("queue", temp);
-    */
   }
 });
 Template.soundQueue.helpers({
@@ -310,17 +300,6 @@ function playNextSongFromQueue() {
   } else {
     updateTrackUIDefault();
   }
-  /*
-  var temp = Session.get("queue");
-  if(temp.length >0){
-  	var nextSong = temp[0]; 
-  	console.log(nextSong);
-  	console.log(nextSong.uri);
-  	widget.load(nextSong.uri);
-  	temp.splice(0, 1);
-  	Session.set("queue", temp);
-  }
-  */
 }
 
 function updatedSongsPlayed(track) {
@@ -333,7 +312,7 @@ function updatedSongsPlayed(track) {
     title: track.title,
     createdAt: new Date(),
     room: Session.get("room"),
-    likes: 0 //todo : update
+    likes:
   });
 }
 Template.track_queue.events({
@@ -343,7 +322,6 @@ Template.track_queue.events({
     Queue.remove(this._id);
   },
   'click .likeButton': function(e) {
-    //Queue.update({_id: "LrCgscqN7k7rYcXRz"}, {$inc:{likes:1}})
     console.log("like song:");
     console.log(this);
     Queue.update({ _id: this._id }, { $inc: { likes: 1 } });
