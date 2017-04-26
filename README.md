@@ -5,5 +5,4 @@ After cloning the repository, run the following commands in the project’s root
 
 To start the application, run `meteor` in the root directory.
 
-
 DEPLOY_HOSTNAME=galaxy.meteor.com meteor deploy queue --settings settings.json
